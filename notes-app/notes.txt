@@ -1,0 +1,2 @@
+My name is DaJuan.
+I like to code in Javascript
