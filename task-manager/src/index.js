@@ -21,11 +21,6 @@ app.post('/users', async (req, res) => {
   } catch (e) {
     res.status(400).send(e)
   }
-
-  // user
-  //   .save()
-  //   .then(() => res.status(201).send(user))
-  //   .catch(e => res.status(400).send(e))
 })
 
 app.get('/users', async (req, res) => {
@@ -46,6 +41,32 @@ app.get('/users/:id', async (req, res) => {
     !user ? res.status(404).send() : res.send(user)
   }catch(error) {
     res.status(500).send()
+  }
+})
+
+app.patch('/users/:id', async (req, res) => {
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['name', 'email', 'password', 'age']
+  const isValidUpdate = updates.every(update => allowedUpdates.includes(update))
+  
+  const _id = req.params.id
+
+  try {
+    const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
+    return !user || !isValidUpdate ? res.status(404).send() : res.send(user)
+  } catch (e) {
+    res.status(400).send(e)
+  }
+})
+
+app.delete('/users/:id', async (req, res) => {
+  const _id = req.params.id
+
+  try {
+    const user = await User.findByIdAndDelete(_id)
+    return !user ? res.status(404).send() : res.send(user)
+  } catch (e) {
+    res.status(400).send()
   }
 })
 
@@ -77,6 +98,32 @@ app.get('/tasks/:id', async (req, res) => {
     !task ? res.status(404).send() : res.send(task)
   } catch(e) {
     res.status(500).send()
+  }
+})
+
+app.patch('/tasks/:id', async (req, res) => {
+  const _id = req.params.id
+
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['description', 'completed']
+  const isValidUpdate = updates.every(update => allowedUpdates.includes(update))
+
+  try {
+    const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
+    return !task || !isValidUpdate ? res.status(404).send() : res.send(task)
+  } catch(e) {
+    res.status(400).send()
+  }
+})
+
+app.delete('/tasks/:id', async (req, res) => {
+  const _id = req.params.id
+
+  try {
+    const task = await Task.findByIdAndDelete(_id)
+    return !task ? res.status(404).send() : res.send(task)
+  } catch(e) {
+    res.status(400).send()
   }
 })
 
