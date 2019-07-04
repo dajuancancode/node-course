@@ -11,11 +11,7 @@ MongoClient.connect(connectionURL, {useNewUrlParser: true}, (error, client) => {
 
   const db = client.db(databaseName)
 
-  db.collection('tasks').findOne({ _id: new ObjectID("5d1d33f3fe0938e7f86bf22e") }, (err, res) => {
-    return  err ? console.log('Unable to fetch') : console.log(res)
-  })
-
-  db.collection('tasks').find({completed: false}).toArray((err, tasks) => {
-    return err ? console.log('Unabel to fetch') : console.log(tasks)
-  })
+  db.collection('tasks').deleteOne({
+    description: "Pack for roadtrip"
+  }).then(result => console.log(result.deletedCount)).catch(error => console.log(error))
 })
