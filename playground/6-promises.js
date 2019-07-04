@@ -1,13 +1,12 @@
-const doWorkPromise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    reject('This is an error')
-  }, 2000)
-})
+const add = (a, b) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(a+b)
+    }, 2000)
+  })
+}
 
-doWorkPromise
-  .then(res => {
-    console.log(res)
-  })
-  .catch(err => {
-    console.log(err)
-  })
+add(1, 2)
+  .then(sum  => add(sum, 5))
+  .then(sum2 => console.log(sum2))
+  .catch(err => console.log(err))
