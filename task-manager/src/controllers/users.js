@@ -1,6 +1,6 @@
 const User = require('../models/user')
 
-const create = async (req, res) => {
+const createUser = async (req, res) => {
   const user = new User(req.body)
 
   try {
@@ -11,7 +11,7 @@ const create = async (req, res) => {
   }
 }
 
-const read = async (req, res) => {
+const listUsers = async (req, res) => {
   try {
     const users = await User.find({})
     res.send(users)
@@ -21,4 +21,41 @@ const read = async (req, res) => {
   
 }
 
-module.exports =  { create, read }
+const readUser = async (req, res) => {
+  const _id = req.params.id
+
+  try {
+    const user = await User.findById(_id)
+    !user ? res.status(404).send() : res.send(user)
+  }catch(error) {
+    res.status(500).send()
+  }
+}
+
+const updateUser = async (req, res) => {
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['name', 'email', 'password', 'age']
+  const isValidUpdate = updates.every(update => allowedUpdates.includes(update))
+  
+  const _id = req.params.id
+
+  try {
+    const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
+    !user || !isValidUpdate ? res.status(404).send() : res.send(user)
+  } catch (e) {
+    res.status(400).send(e)
+  }
+}
+
+const removeUser = async (req, res) => {
+  const _id = req.params.id
+
+  try {
+    const user = await User.findByIdAndDelete(_id)
+    !user ? res.status(404).send() : res.send(user)
+  } catch (e) {
+    res.status(400).send()
+  }
+}
+
+module.exports =  { createUser, listUsers, readUser, updateUser, removeUser }

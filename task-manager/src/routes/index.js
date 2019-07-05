@@ -1,24 +1,24 @@
 const { Router } = require('express')
 
-const user = require('../controllers/user')
 const users = require('../controllers/users')
-const task = require('../controllers/task')
 const tasks = require('../controllers/tasks')
 
 const router = Router()
 
-router.post('/users', users.create)
-router.get('/users', users.read)
+router.get('/users', users.listUsers)
 
-router.get('/user/:id', user.read)
-router.patch('/user/:id', user.update)
-router.delete('/user/:id', user.remove)
+router.post('/signup', users.createUser)
 
-router.post('/tasks', tasks.create)
-router.get('/tasks', tasks.read)
+router.get('/user/:id', users.readUser)
+router.patch('/user/:id', users.updateUser)
+router.delete('/user/:id', users.removeUser)
 
-router.get('/task/:id', task.read)
-router.patch('/task/:id', task.update)
-router.delete('/task/:id', task.remove)
+
+router.get('/tasks', tasks.listTasks)
+
+router.post('/task', tasks.createTask)
+router.get('/task/:id', tasks.readTask)
+router.patch('/task/:id', tasks.updateTask)
+router.delete('/task/:id', tasks.removeTask)
 
 module.exports = router
