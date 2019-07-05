@@ -39,9 +39,17 @@ const updateUser = async (req, res) => {
   
   const _id = req.params.id
 
+  if (!isValidUpdate) {
+    res.status(400).send()
+    return
+  }
+
   try {
-    const user = await User.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
-    !user || !isValidUpdate ? res.status(404).send() : res.send(user)
+    const user = await User.findById(_id)
+    updates.forEach(update => user[update] = req.body[update])
+    user.save()
+
+    !user ? res.status(404).send() : res.send(user)
   } catch (e) {
     res.status(400).send(e)
   }

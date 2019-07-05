@@ -38,9 +38,17 @@ const updateTask = async (req, res) => {
   const allowedUpdates = ['description', 'completed']
   const isValidUpdate = updates.every(update => allowedUpdates.includes(update))
 
+  if (!isValidUpdate) {
+    res.status(400).send()
+    return
+  }
+
   try {
-    const task = await Task.findByIdAndUpdate(_id, req.body, { new: true, runValidators: true})
-    return !task || !isValidUpdate ? res.status(404).send() : res.send(task)
+    const task = await Task.findById(_id)
+    updates.forEach(update => task[update] = req.body[update])
+    task.save()
+
+    !task ? res.status(404).send() : res.send(task)
   } catch(e) {
     res.status(400).send()
   }
