@@ -1,23 +1,31 @@
 const User = require('../models/user')
 
+
 const createUser = async (req, res) => {
   const user = new User(req.body)
 
   try {
     await user.save()
-    res.status(201).send(user)
+    const token = await user.generateAuthToken()
+    res.status(201).send({user, token})
   } catch (e) {
     res.status(400).send(e)
   }
 }
 
-const listUsers = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
-    const users = await User.find({})
-    res.send(users)
-  } catch(e) {
-    res.status(500).send()
+    const user = await User.findByCredentials(req.body.email, req.body.password)
+    const token = await user.generateAuthToken()
+    res.send({user, token})
+  } catch (e) {
+    console.log(e)
+    res.status(400).send()
   }
+}
+
+const userProfile = async (req, res) => {
+  res.send(req.user)
   
 }
 
@@ -66,4 +74,4 @@ const removeUser = async (req, res) => {
   }
 }
 
-module.exports =  { createUser, listUsers, readUser, updateUser, removeUser }
+module.exports =  { createUser, loginUser, userProfile, readUser, updateUser, removeUser }

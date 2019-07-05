@@ -3,22 +3,24 @@ const { Router } = require('express')
 const users = require('../controllers/users')
 const tasks = require('../controllers/tasks')
 
+const authMiddleware = require('../middleware/auth')
+
 const router = Router()
 
-router.get('/users', users.listUsers)
+router.get('/users/me', authMiddleware, users.userProfile)
+router.post('/users/signup', users.createUser)
+router.post('/users/login', users.loginUser)
 
-router.post('/signup', users.createUser)
-
-router.get('/user/:id', users.readUser)
-router.patch('/user/:id', users.updateUser)
-router.delete('/user/:id', users.removeUser)
+router.get('/user/:id', authMiddleware, users.readUser)
+router.patch('/user/:id', authMiddleware, users.updateUser)
+router.delete('/user/:id', authMiddleware, users.removeUser)
 
 
-router.get('/tasks', tasks.listTasks)
+router.get('/tasks', authMiddleware, tasks.listTasks)
+router.post('/tasks/create', authMiddleware, tasks.createTask)
 
-router.post('/task', tasks.createTask)
-router.get('/task/:id', tasks.readTask)
-router.patch('/task/:id', tasks.updateTask)
-router.delete('/task/:id', tasks.removeTask)
+router.get('/task/:id', authMiddleware, tasks.readTask)
+router.patch('/task/:id', authMiddleware, tasks.updateTask)
+router.delete('/task/:id', authMiddleware, tasks.removeTask)
 
 module.exports = router
