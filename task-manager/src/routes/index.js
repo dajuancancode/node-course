@@ -7,14 +7,15 @@ const authMiddleware = require('../middleware/auth')
 
 const router = Router()
 
-router.get('/users/me', authMiddleware, users.userProfile)
+
 router.post('/users/signup', users.createUser)
 router.post('/users/login', users.loginUser)
+router.post('/users/logout', authMiddleware, users.logoutUser)
+router.post('/users/logoutAll', authMiddleware, users.logoutAll)
 
-router.get('/user/:id', authMiddleware, users.readUser)
-router.patch('/user/:id', authMiddleware, users.updateUser)
-router.delete('/user/:id', authMiddleware, users.removeUser)
-
+router.get('/users/me', authMiddleware, users.userProfile)
+router.patch('/users/me', authMiddleware, users.updateUser)
+router.delete('/users/me', authMiddleware, users.removeUser)
 
 router.get('/tasks', authMiddleware, tasks.listTasks)
 router.post('/tasks/create', authMiddleware, tasks.createTask)
