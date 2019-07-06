@@ -1,6 +1,7 @@
+require('dotenv').config()
+require('./db/mongoose')
 const express = require('express')
 
-require('./db/mongoose')
 const router = require('./routes/index')
 
 // Configure express 

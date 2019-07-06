@@ -1,4 +1,6 @@
 const User = require('../models/user')
+const sharp = require('sharp')
+const { sendWelcomeEmail, sendCancelEmail } = require('../emails/account')
 
 
 const createUser = async (req, res) => {
@@ -7,8 +9,10 @@ const createUser = async (req, res) => {
   try {
     await user.save()
     const token = await user.generateAuthToken()
+    sendWelcomeEmail(user.email, user.name)
     res.status(201).send({user, token})
   } catch (e) {
+    console.log(e)
     res.status(400).send(e)
   }
 }
@@ -64,7 +68,6 @@ const updateUser = async (req, res) => {
   try {
     
     updates.forEach(update => req.user[update] = req.body[update])
-    req.user.updatedAt = new Date()
     req.user.save()
 
     res.send(req.user)
@@ -77,6 +80,7 @@ const removeUser = async (req, res) => {
   
   try {
     await req.user.remove()
+    sendCancelEmail(req.user.email, req.user.name.split(' ')[0])
     res.send(req.user)
   } catch (e) {
     res.status(400).send()
@@ -84,7 +88,9 @@ const removeUser = async (req, res) => {
 }
 
 const uploadAvatar = async (req, res) => {
-  req.user.avatar = req.file.buffer
+  const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250}).png().toBuffer()
+
+  req.user.avatar = buffer
   await req.user.save()
   res.send()
 }
@@ -102,7 +108,7 @@ const fetchAvatar = async (req, res) => {
     if (!user || !user.avatar) {
       throw new Error()
     }
-    res.set('Content-Type', 'image/jpg')
+    res.set('Content-Type', 'image/png')
     res.send(user.avatar)
   } catch (e) {
     res.status(404).send()

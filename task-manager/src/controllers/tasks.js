@@ -8,7 +8,6 @@ const createTask = async(req, res) => {
 
   try {
     await task.save()
-    console.log(req.body)
     res.status(201).send(task)
   } catch(e) {
     res.status(400).send()
@@ -78,7 +77,7 @@ const updateTask = async (req, res) => {
 
     updates.forEach(update => task[update] = req.body[update])
     task.save()
-
+    
     res.send(task)
   } catch(e) {
     res.status(400).send()
