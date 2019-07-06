@@ -64,6 +64,7 @@ const updateUser = async (req, res) => {
   try {
     
     updates.forEach(update => req.user[update] = req.body[update])
+    req.user.updatedAt = new Date()
     req.user.save()
 
     res.send(req.user)

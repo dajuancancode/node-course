@@ -8,6 +8,7 @@ const createTask = async(req, res) => {
 
   try {
     await task.save()
+    console.log(req.body)
     res.status(201).send(task)
   } catch(e) {
     res.status(400).send()
@@ -15,9 +16,30 @@ const createTask = async(req, res) => {
 }
 
 const listTasks = async(req, res) => {
+
+  const match = {}
+  const sort = {}
+
+  if (req.query.completed) {
+    match.completed = req.query.completed === 'true'
+  }
+
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split('_')
+    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+  }
+
   try {
-    const tasks = await Task.find({author: req.user._id})
-    res.send(tasks)
+    await req.user.populate({
+      path: 'tasks',
+      match,
+      options: {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.limit),
+        sort
+      }
+    }).execPopulate()
+    res.send(req.user.tasks)
   }catch (e) {
     res.status(500).send()
   }
