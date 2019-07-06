@@ -83,4 +83,30 @@ const removeUser = async (req, res) => {
   }
 }
 
-module.exports =  { createUser, loginUser, logoutUser, logoutAll, userProfile, updateUser, removeUser }
+const uploadAvatar = async (req, res) => {
+  req.user.avatar = req.file.buffer
+  await req.user.save()
+  res.send()
+}
+
+const deleteAvatar = async (req, res) => {
+  req.user.avatar = undefined
+  await req.user.save()
+  res.send()
+}
+
+const fetchAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+    
+    if (!user || !user.avatar) {
+      throw new Error()
+    }
+    res.set('Content-Type', 'image/jpg')
+    res.send(user.avatar)
+  } catch (e) {
+    res.status(404).send()
+  }
+}
+
+module.exports =  { fetchAvatar, deleteAvatar, createUser, loginUser, logoutUser, logoutAll, userProfile, updateUser, removeUser, uploadAvatar }
